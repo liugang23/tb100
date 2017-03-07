@@ -1,0 +1,267 @@
+/* 自定义样式 */
+.page {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: 100%;
+    /*height: 100%;*/
+	overflow: auto;
+	background-color: #eceded;
+}
+.app-text-left {text-align:left;}
+.app-text-center {text-align:center;}
+.app-text-right {text-align:right;}
+.app-icon-index {
+    background-image: url(../images/icon/icon-table-nar.png);
+    background-position: 0 0;
+}
+.app-main-top {margin-top: 50px;}
+.app-nav-top {margin-top: 39px;}
+.app-main-bottom {margin-bottom: 55px;}
+.app-space-20 {margin-top: 20px;}
+.app-space-bottom {margin-bottom: 5px;}
+.app-space-top {margin-top: 5px;}
+.app-order-cell {
+    margin: 3px 0 5px 0;
+}
+.app-mint-cell {
+    background-color: #fff;
+    box-sizing: border-box;
+    color: inherit;
+    min-height: 48px;
+    display: block;
+    overflow: hidden;
+    position: relative;
+    text-decoration: none;
+}
+.app-mint-field {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+.app-mint-cell-left {
+    position: absolute;
+    height: 100%;
+    left: 0;
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+}
+.app-mint-cell-wrapper {
+    background-image: -webkit-linear-gradient(top, #d9d9d9, #d9d9d9 50%, transparent 50%);
+    background-image: linear-gradient(180deg, #d9d9d9, #d9d9d9 50%, transparent 50%);
+    background-size: 120% 1px;
+    background-repeat: no-repeat;
+    background-position: top left;
+    background-origin: content-box;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    box-sizing: border-box;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    font-size: 16px;
+    line-height: 1;
+    min-height: inherit;
+    overflow: hidden;
+    padding: 0 10px;
+    width: 100%;
+}
+.app-mint-cell-right {
+    position: absolute;
+    height: 100%;
+    right: 0;
+    top: 0;
+    -webkit-transform: translate3d(100%, 0, 0);
+    transform: translate3d(100%, 0, 0);
+}
+.app-label {
+    display: block;
+    width: 105px;
+    word-wrap: break-word;
+    word-break: break-all;
+    text-align: left;
+}
+.app-input {
+    border: 0;
+    outline: 0;
+    -webkit-appearance: none;
+    background-color: transparent;
+    font-size: inherit;
+    color: inherit;
+    height: 1.41176471em;
+    line-height: 1.41176471;
+}
+.app-input-code {
+    width: 105px;
+    border: 0;
+    outline: 0;
+    -webkit-appearance: none;
+    background-color: transparent;
+    font-size: inherit;
+    color: inherit;
+    height: 1.41176471em;
+    line-height: 1.41176471;
+}
+.app-phone-code {
+	font-size: 14px; 
+	color: #3CC51F;
+	width: 100px;
+	right: 0;
+}
+.app-Validator-code {
+    width: 100px;
+    height: 48px;
+}
+.app-Validator-code img {
+    width: 100px;
+    height: 48px;
+}
+.app-cart-img {
+    width: 90px;
+    height: 90px;
+    margin-right: 10px;
+    float: left;
+}
+.app-cart-info {
+    /*position: absolute; */
+    float: left;
+    left: 10px; 
+    right: 0; 
+    top: 0
+}
+.app-time {
+    text-align:left;
+    font-size: 14px;
+    color: #444;
+}
+.app-cart-summary {
+    font-size: 16px;
+    color: #888;
+}
+.app-cart-price {
+    font-size: 16px;
+    color: #CD4A4A;
+}
+.app-nav-item-hd {
+    color: #000;
+    font-size: 14px;
+    height: 28px;
+    line-height: 28px;
+    padding-left: 34px;
+    position: relative;
+    z-index: 1;
+}
+.app-nav-item-bd {
+    font-size: 0;
+    padding: 11px 0;
+    position: relative;
+    background-color: #fff;
+}
+.app-nav-item-bd a {
+    color: #000;
+    display: inline-block;
+    font-size: 12px;
+    position: relative;
+    text-align: center;
+    width: 33.333%;
+}
+.app-nav-item-bd a:last-child:after {
+    border: medium none;
+}
+.app-nav-item-bd a:after {
+    border-right: 1px solid #d3d3d3;
+    bottom: 0;
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.app-nav-cart .app-nav-item-hd:before {
+    background-position: 0 -46px;
+}
+
+.app-nav-item-hd:before {
+    background-image: url(../images/icon/icon-sprite.png);
+    background-repeat: no-repeat;
+    background-size: 24px auto;
+    content: "";
+    height: 24px;
+    left: 0;
+    position: absolute;
+    top: 5px;
+    width: 24px;
+}
+
+.app-nav-site .app-nav-item-hd:before {
+    background-position: 0 -91.5px;
+}
+
+
+.app-nav-item-hd-coupons {
+  padding-left: 34px;
+  position: relative;
+  height: 30px;
+  color: #000;
+  font-size: 14px;
+  line-height: 30px;
+  z-index: 1;
+}
+
+.app-nav-item-hd-coupons:before {
+    background-image: url(../images/icon/icon-coupons.png);
+    background-repeat: no-repeat;
+    background-size: 24px auto;
+    content: "";
+    height: 24px;
+    left: 0;
+    position: absolute;
+    top: 5px;
+    width: 24px;
+    border-radius: 100%;
+}
+
+.app-nav-item-hd-coupons-sale {
+    color: #000;
+    font-size: 14px;
+    height: 30px;
+    line-height: 30px;
+    padding-left: 34px;
+    position: relative;
+    z-index: 1;
+}
+.app-nav-item-hd-coupons-sale:before {
+    background-image: url(../images/icon/icon-tel-image.png);
+    background-repeat: no-repeat;
+    background-size: 24px auto;
+    content: "";
+    height: 24px;
+    left: 0;
+    position: absolute;
+    top: 5px;
+    width: 24px;
+    border-radius: 100%;
+}
+.app-nav-item-hd-promotion {
+    color: #000;
+    font-size: 14px;
+    height: 30px;
+    line-height: 30px;
+    padding-left: 34px;
+    position: relative;
+    z-index: 1;
+}
+.app-nav-item-hd-promotion:before {
+    background-image: url(../images/icon/icon-notice-reduce.png);
+    background-repeat: no-repeat;
+    background-size: 24px auto;
+    content: "";
+    height: 24px;
+    left: 0;
+    position: absolute;
+    top: 5px;
+    width: 24px;
+}

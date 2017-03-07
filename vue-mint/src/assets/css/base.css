@@ -1,0 +1,9 @@
+/* 修改 mint-ui 部分样式 */
+.mint-cell-title {text-align: left !important;}
+.mint-button--danger {background-color: #04BE02 !important;}
+.mint-navbar {height: 36px;}
+.mint-tab-item-label {
+    color: inherit;
+    font-size: 14px;
+    line-height: 0 !important;
+}

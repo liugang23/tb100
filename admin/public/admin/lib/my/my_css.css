@@ -1,0 +1,74 @@
+.i_red { color: red; }
+.lg_tit { 
+	display: inline-block;
+    padding: 3px 5px;
+    margin-bottom: 0;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1.2;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+/*3.4.5 表单布局*/
+label,.placeholder{font-size:14px}
+.form legend{font-size:20px}/*表单名称*/
+.form .row{margin-top:15px}/*表单行*/
+        .form-label{display:block; color:#555}/*表单标题*/
+        .formControls{position:relative}/*表单控制区*/
+        .formControls > *{vertical-align:middle}
+            .placeholder{position:absolute; left:4px; top:4px;color:#c6c6c6; cursor:text}/*表单默认值*/  
+.form-horizontal .row{display:table;width:100%}
+.form-horizontal .form-label{margin-top:3px;cursor:text;text-align:right;padding-right:10px}
+.form-horizontal .formControls{ padding-right:10px}
+.form-horizontal .Validform_checktip{ margin-top:5px}
+/*设置placeholder颜色*/
+::-webkit-input-placeholder {color:#b3b3b3}/* WebKit browsers */
+:-moz-placeholder {color:#b3b3b3}/* Mozilla Firefox 4 to 18 */
+::-moz-placeholder {color:#b3b3b3}/* Mozilla Firefox 19+ */
+:-ms-input-placeholder {color:#b3b3b3}/* Internet Explorer 10+ */
+.placeholder{color:#adb0be; position:absolute; z-index:9}/*不兼容placeholder属性的浏览器，可使用<span class="placeholder">表单默认值</span>*/
+@media (max-width: 767px) {
+    .responsive .form-label{ text-align:left;padding-right:0; font-size:16px; float:none}
+    .responsive .formControls{ padding-right:0; float:none; margin-top:10px}
+}
+/*3.4.6 表单验证*/
+/*文本框的错误状态*/
+.Validform_error,input.error,select.error{background-color:#fbe2e2; border-color:#c66161; color:#c00}
+.Validform_wrong,.Validform_right,.Validform_warning{display:inline-block;height:20px;font-size:12px;vertical-align:middle; padding-left:25px}
+/*错误*/
+.Validform_wrong{background:url(../../images/icon_error_s.png) no-repeat 0 center;color:#ef392b}
+/*正确*/
+.Validform_right{background:url(../../images/icon_right_s.png) no-repeat 0 center}
+/*警告*/
+.Validform_warning{background:url(../../images/icon_warning_s.png) no-repeat 0 center;color:#777}
+label.error{ position: absolute; right: 18px; top: 5px;color:#ef392b; font-size: 12px}
+/*密码等级*/
+.passwordStrength b{font-weight:400}
+.passwordStrength b,.passwordStrength span{display:inline-block; vertical-align:middle;line-height:16px;line-height:18px\9;height:16px}
+.passwordStrength span{width:57px;text-align:center;background-color:#d0d0d0;   border-right:1px solid #fff}
+.passwordStrength .last{border-right:none}
+.passwordStrength .bgStrength{color:#fff;background-color:#fcc900}
+/*Validform对话框*/
+#Validform_msg{font-size:14px;width:300px; -webkit-box-shadow:2px 2px 3px #aaa; -moz-box-shadow:2px 2px 3px #aaa; background:#fff; position:absolute; top:0px; right:50px; z-index:99999; display:none;filter: progid:DXImageTransform.Microsoft.Shadow(Strength=3, Direction=135, Color='#999999'); box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1)}
+#Validform_msg .iframe{position:absolute; left:0px; top:-1px; z-index:-1}
+#Validform_msg .Validform_title{font-size:20px; padding:10px;text-align:left;color:#fff; position:relative; background-color:#fcc900}
+#Validform_msg a.Validform_close:link,#Validform_msg a.Validform_close:visited{position:absolute; right:8px; top:6px; color:#fff; text-decoration:none; font-family:Verdana}
+#Validform_msg a.Validform_close:hover{color:#fff}
+#Validform_msg .Validform_info{padding:10px;border:1px solid #bbb; border-top:none; text-align:left}
+@media (max-width: 767px) {
+    .responsive .Validform_checktip{margin-top:10px}
+}
+
+
