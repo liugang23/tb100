@@ -51,3 +51,76 @@
 
 	npm run dev
 	http://localhost:8088/
+	
+### 项目问题说明
+项目api请求方式改为 dingo + jWT 方式后，用户认证报错
+
+<?php
+namespace App\Api\Controllers\V1;
+
+use Illuminate\Http\Request;
+use App\Api\Controllers\BaseController;
+
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Facades\Hash;
+use App\Service\UsersService;
+
+
+class AuthenticateController extends BaseController
+{
+     private static $usersService;
+
+     public function __construct(UsersService $usersService)
+     {
+         self::$usersService = $usersService;
+     }
+
+    /**
+     * 验证用户 创建 token
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function authenticate(Request $request)
+    {
+//       $data = [
+//           'phone' => $request->get('phone'),
+//           'password' => $request->get('passw')
+//       ];
+//
+//       $user = self::$usersService->apiValidateUser($data);
+//       $token = JWTAuth::fromUser($user);
+       //  从请求获取凭据
+         $payload = $request->only('phone', 'passw');
+
+         try {
+             // attempt 尝试验证凭据并为用户创建令牌
+             if (! $token = JWTAuth::attempt($payload)) {
+                 // 返回无效令牌
+                 return response()->json(['error' => 'invalid_credentials'], 401);
+             }
+         } catch (JWTException $e) {
+             // 尝试创建 token 令牌时出错
+             return response()->json(['error' => 'could_not_create_token'], 500);
+         }
+        
+        // 返回 token 令牌  compact函数创建一个由参数所带变量组成的数组
+        return response()->json(compact('token'))
+                         ->header('Content-Type', 'text/html;charset=utf-8');
+    }
+
+
+}
+以上代码在 app\Api\Controller\V1 目录下可以找到，
+根据laravel 文档说明 attempt 方法应该是执行用户验证及创建令牌的方法，但这里却找不到验证过程。
+换成自定义验证：
+$data = [
+           'phone' => $request->get('phone'),
+           'password' => $request->get('passw')
+       ];
+
+       $user = self::$usersService->apiValidateUser($data);
+       $token = JWTAuth::fromUser($user);
+       
+       虽然登录成功了，但却不知道前端向后端发起请求时如何带上token。
+       在这里向各位高手、技术大侠请教。项目有很多漏洞，如可以，请一并指出！谢谢！
