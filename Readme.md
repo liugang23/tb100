@@ -128,12 +128,15 @@
  虽然登录成功了，但却不知道前端向后端发起请求时如何带上token。
  
  前端通过 store 获取token到，前端向后端请求时，带上token 报错，控制台错误如下：
+ 
  	XMLHttpRequest cannot load http://www.tb.com/api/cart?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzd…U3YTlmNzY3MzUxMzAzNzYyZDNkZSJ9.d6A0b1k5QMErjmoYRXFQNOpEVGJUxJN1I1PDQzF0HNM. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://localhost:8088' is therefore not allowed access. The response had HTTP status code 500.
 	
 通过浏览器以get请求，报错如下：
+
 	{"message":"SQLSTATE[42S22]: Column not found: 1054 Unknown column 'data_users.id' in 'where clause' (SQL: select * from `data_users` where `data_users`.`id` is null limit 1)","code":"42S22","status_code":500,"debug":
  
  浏览器返回的报错大概说明是从数据库取数据时的问题，因为没有 id 这个字段，问题就来了，JWT是如何实现对数据的操作呢？
+ 
  这里 app\config\app.php  和 app\config\jwt.php  这两个文件相关model 的内容均修改为 app\model
  
  在这里向各位高手、技术大侠请教。项目有很多漏洞，如可以，请一并指出！谢谢！
