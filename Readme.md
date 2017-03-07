@@ -139,4 +139,16 @@
  
  这里 app\config\app.php  和 app\config\jwt.php  这两个文件相关model 的内容均修改为 app\model
  
+ 这样吧，我还是从 app\model 目录下的 user.php 文件下手，		
+ 
+ 	class User extends Model
+	{	
+	    // 自定义主键
+	    protected $primaryKey = 'uid';
+	 }
+ 
+ 通过浏览器请求返回结果如：{"errcode":400004,"errmsg":"user not found"}
+ 
+ 至此，用户登录成功，token验证也是通过的，但用户却是不存在的，说明在使用 JWT 过程中存在问题
+ 
  在这里向各位高手、技术大侠请教。项目有很多漏洞，如可以，请一并指出！谢谢！
