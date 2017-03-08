@@ -5,9 +5,6 @@ use App\Model\User;
 
 class UserStore
 {
-	private static $user = 'data_users';
-
-
 	/**
 	 * 用户查询  admin
 	 */
@@ -28,12 +25,12 @@ class UserStore
 
 	/**
 	 * 获取指定用户 Api
-	 * @param $phone
+	 * @param $param
 	 * @return mixed
 	 */
-	public static function apiGetUser($phone)
-	{	
-		return User::where('tel', $phone)->first();
+	public static function apiGetUser($param)
+	{
+		return User::where($param)->first();
 	}
 
 	/**

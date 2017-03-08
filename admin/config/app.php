@@ -186,7 +186,7 @@ return [
         Mews\Captcha\CaptchaServiceProvider::class,// Mews captcha(验证码包)
 
         Dingo\Api\Provider\LaravelServiceProvider::class,// dingo api管理工具包
-        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,// JWT 扩展包
+        Tymon\JWTAuth\Providers\LaravelServiceProvider::class,// JWT 扩展包
         
         // Laravel\Passport\PassportServiceProvider::class,// 注册Passport服务提供者
 
@@ -239,7 +239,6 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Captcha' => Mews\Captcha\Facades\Captcha::class,
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
-        'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         'APIRoute' => Dingo\Api\Facade\Route::class,
         'API' => Dingo\Api\Facade\API::class
     ],

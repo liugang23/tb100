@@ -4,7 +4,7 @@ namespace App\Api\Controllers\V1;
 use App\Api\Controllers\BaseController;
 use Illuminate\Http\Request;
 use App\Service\GoodsService;
-use Symfony\Component\HttpFoundation\Response;
+
 
 class GoodsInfoController extends BaseController
 {
@@ -20,7 +20,7 @@ class GoodsInfoController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request,Response $response)
+    public function index(Request $request)
     {
         $goodslist = self::$goodsService->apiGetGoodsList($id=1,0);
 
@@ -58,7 +58,7 @@ class GoodsInfoController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, Response $response, $id)
+    public function show(Request $request, $id)
     {
         $goodsInfo = self::$goodsService->apiGetGoodsInfo($id);
 

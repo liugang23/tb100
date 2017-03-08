@@ -77,9 +77,11 @@ class UsersService
 	 */
 	public function apiValidateUser($data)
 	{
-		$phone = $data['phone'];
-		$password = $data['password'];
-
+        $param = [
+             'tel' => $data['phone'],
+             'status' => 0
+        ];
+        $password = $data['password'];
 		// $validateCode = $data['ValidateCode'];
 
 		// 获取session 中的验证码
@@ -94,7 +96,8 @@ class UsersService
 //            return '验证码不正确';
 //		}
 		// 查询用户是否存在
-		$user = self::$userStore->apiGetUser($phone);
+		$user = self::$userStore->apiGetUser($param);
+
 		if(empty($user) || !isset($user)) {
            return '';
 		} else {

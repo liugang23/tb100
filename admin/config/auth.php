@@ -30,7 +30,7 @@ return [
     | All authentication drivers have a user provider. This defines how the
     | users are actually retrieved out of your database or other storage
     | mechanisms used by this application to persist your user's data.
-    |
+    | Guard 定义了用户在每个请求中如何实现认证
     | Supported: "session", "token"
     |
     */
@@ -59,7 +59,7 @@ return [
     | If you have multiple user tables or models you may configure multiple
     | sources which represent each model / table. These sources may then
     | be assigned to any extra authentication guards you have defined.
-    |
+    | Provider 定义了如何从持久化存储中获取用户信息
     | Supported: "database", "eloquent"
     |
     */
@@ -68,6 +68,7 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Model\User::class,
+            'table' => 'data_users',
         ],
 
         // 'users' => [

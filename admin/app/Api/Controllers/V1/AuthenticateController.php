@@ -4,10 +4,12 @@ namespace App\Api\Controllers\V1;
 use Illuminate\Http\Request;
 use App\Api\Controllers\BaseController;
 
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
-use Illuminate\Support\Facades\Hash;
+// use Tymon\JWTAuth\JWTAuth;
+// use Tymon\JWTAuth\Exceptions\JWTException;
+// use Illuminate\Support\Facades\Hash;
 use App\Service\UsersService;
+use Carbon\Carbon;
+use Auth;
 
 
 class AuthenticateController extends BaseController
@@ -20,36 +22,39 @@ class AuthenticateController extends BaseController
      }
 
     /**
-     * 验证用户 创建 token
+     * 验证用户  获取token
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function authenticate(Request $request)
     {
-//       $data = [
-//           'phone' => $request->get('phone'),
-//           'password' => $request->get('passw')
-//       ];
-//
-//       $user = self::$usersService->apiValidateUser($data);
-//       $token = JWTAuth::fromUser($user);
-       //  从请求获取凭据
-         $payload = $request->only('phone', 'passw');
+        $payload = [
+            'tel' => $request->get('phone'),
+            'password' => $request->get('passw'),
+            'status' => 0,
+        ];
 
-         try {
-             // attempt 尝试验证凭据并为用户创建令牌
-             if (! $token = JWTAuth::attempt($payload)) {
-                 // 返回无效令牌
-                 return response()->json(['error' => 'invalid_credentials'], 401);
+        try {
+            // attempt 尝试验证凭据并为用户创建令牌
+            if (! $token = Auth::attempt($payload)) {
+                // 返回无效令牌
+                return response()->json(['error' => 'invalid_credentials'], 401);
              }
-         } catch (JWTException $e) {
-             // 尝试创建 token 令牌时出错
-             return response()->json(['error' => 'could_not_create_token'], 500);
-         }
-        
+        } catch (JWTException $e) {
+            // 尝试创建 token 令牌时出错
+            return response()->json(['error' => 'could_not_create_token'], 500);
+        }
+
         // 返回 token 令牌  compact函数创建一个由参数所带变量组成的数组
-        return response()->json(compact('token'))
-                         ->header('Content-Type', 'text/html;charset=utf-8');
+        // return response()->json(compact('token'));
+
+        $result['data'] = [
+            'token' => $token,
+            'expired_at' => Carbon::now()->addMinutes(config('jwt.ttl'))->toDateTimeString(),
+            'refresh_expired_at' => Carbon::now()->addMinutes(config('jwt.refresh_ttl'))->toDateTimeString(),
+        ];
+
+        return $this->response->array($result)->setStatusCode(201);
     }
 
     /**
@@ -88,7 +93,7 @@ class AuthenticateController extends BaseController
      */
     public function logout()
     {
-
+        Auth::guard($this->guard)->logout();
         return response()->json(['status' => 'ok']);
     }
 
