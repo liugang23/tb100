@@ -120,8 +120,9 @@
 
 	
 以上代码在 app\Api\Controller\V1 目录下可以找到，
-       
-虽然登录成功了，但此返回的 token 为true ,并不是一个字符串。求解！
+       
+通过 Auth::attempt($payload) 获得token 为 true 并不是一个字符串。求解！
 	 {token: true, expired_at: "2017-03-08 15:12:42", refresh_expired_at: "2017-03-22 14:12:42"}
+通过 JWTAuth::attempt($payload) 获得 token 为一个字符串，但是始终 Token Signature could not be verified （无法验证）
  
  在这里向各位高手、技术大侠请教。项目有很多漏洞，如可以，请一并指出！谢谢！
