@@ -56,15 +56,17 @@
 项目api请求方式改为 dingo + jWT 方式后，用户认证报错
 
 	<?php
-	namespace App\Api\Controllers\V1;
+namespace App\Api\Controllers\V1;
 
-	use Illuminate\Http\Request;
-	use App\Api\Controllers\BaseController;
+use Illuminate\Http\Request;
+use App\Api\Controllers\BaseController;
 
-	use Tymon\JWTAuth\Facades\JWTAuth;
-	use Tymon\JWTAuth\Exceptions\JWTException;
-	use Illuminate\Support\Facades\Hash;
-	use App\Service\UsersService;
+// use Tymon\JWTAuth\JWTAuth;
+// use Tymon\JWTAuth\Exceptions\JWTException;
+// use Illuminate\Support\Facades\Hash;
+use App\Service\UsersService;
+use Carbon\Carbon;
+use Auth;
 
 
 	class AuthenticateController extends BaseController
@@ -77,78 +79,49 @@
 	     }
 
 	    /**
-	     * 验证用户 创建 token
+	     * 验证用户  获取token
 	     * @param Request $request
 	     * @return \Illuminate\Http\JsonResponse
 	     */
 	    public function authenticate(Request $request)
 	    {
-		 // $data = [
-		 //    'phone' => $request->get('phone'),
-		 //    'password' => $request->get('passw')
-		 // ];
+		$payload = [
+		    'tel' => $request->get('phone'),
+		    'password' => $request->get('passw'),
+		    'status' => 0,
+		];
 
-		 // $user = self::$usersService->apiValidateUser($data);
-		 // $token = JWTAuth::fromUser($user);
-
-	       //  从请求获取凭据
-		 $payload = $request->only('phone', 'passw');
+		// $payload = $request->only('tel', 'password');
 
 		try {
-		     // attempt 尝试验证凭据并为用户创建令牌
-		     if (! $token = JWTAuth::attempt($payload)) {
-			 // 返回无效令牌
-			 return response()->json(['error' => 'invalid_credentials'], 401);
+		    // attempt 尝试验证凭据并为用户创建令牌
+		    if (! $token = Auth::attempt($payload)) {
+			// 返回无效令牌
+			return response()->json(['error' => 'invalid_credentials'], 401);
 		     }
-		 } catch (JWTException $e) {
-		     // 尝试创建 token 令牌时出错
-		     return response()->json(['error' => 'could_not_create_token'], 500);
-		 }
+		} catch (JWTException $e) {
+		    // 尝试创建 token 令牌时出错
+		    return response()->json(['error' => 'could_not_create_token'], 500);
+		}
 
 		// 返回 token 令牌  compact函数创建一个由参数所带变量组成的数组
-		return response()->json(compact('token'))
-				 ->header('Content-Type', 'text/html;charset=utf-8');
+		// return response()->json(compact('token'));
+
+		$result['data'] = [
+		    'token' => $token,
+		    'expired_at' => Carbon::now()->addMinutes(config('jwt.ttl'))->toDateTimeString(),
+		    'refresh_expired_at' => Carbon::now()->addMinutes(config('jwt.refresh_ttl'))->toDateTimeString(),
+		];
+
+		return $this->response->array($result)->setStatusCode(201);
 	    }
 
-
 	}
+
 	
 以上代码在 app\Api\Controller\V1 目录下可以找到，
-根据laravel 文档说明 attempt 方法应该是执行用户验证及创建令牌的方法，但这里却找不到验证过程。
-换成自定义验证：
-
-	$data = [
-           	'phone' => $request->get('phone'),
-          	 'password' => $request->get('passw')
-       	];
-
-       $user = self::$usersService->apiValidateUser($data);
-       $token = JWTAuth::fromUser($user);
        
- 虽然登录成功了，但却不知道前端向后端发起请求时如何带上token。
- 
- 前端通过 store 获取token到，前端向后端请求时，带上token 报错，控制台错误如下：
- 
- 	XMLHttpRequest cannot load http://www.tb.com/api/cart?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzd…U3YTlmNzY3MzUxMzAzNzYyZDNkZSJ9.d6A0b1k5QMErjmoYRXFQNOpEVGJUxJN1I1PDQzF0HNM. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://localhost:8088' is therefore not allowed access. The response had HTTP status code 500.
-	
-通过浏览器以get请求，报错如下：
-
-	{"message":"SQLSTATE[42S22]: Column not found: 1054 Unknown column 'data_users.id' in 'where clause' (SQL: select * from `data_users` where `data_users`.`id` is null limit 1)","code":"42S22","status_code":500,"debug":
- 
- 浏览器返回的报错大概说明是从数据库取数据时的问题，因为没有 id 这个字段，问题就来了，JWT是如何实现对数据的操作呢？
- 
- 这里 app\config\app.php  和 app\config\jwt.php  这两个文件相关model 的内容均修改为 app\model
- 
- 这样吧，我还是从 app\model 目录下的 user.php 文件下手，		
- 
- 	class User extends Model
-	{	
-	    // 自定义主键
-	    protected $primaryKey = 'uid';
-	 }
- 
- 通过浏览器请求返回结果如：{"errcode":400004,"errmsg":"user not found"}
- 
- 至此，用户登录成功，token验证也是通过的，但用户却是不存在的，说明在使用 JWT 过程中存在问题
+虽然登录成功了，但此返回的 token 为true ,并不是一个字符串。求解！
+	 {token: true, expired_at: "2017-03-08 15:12:42", refresh_expired_at: "2017-03-22 14:12:42"}
  
  在这里向各位高手、技术大侠请教。项目有很多漏洞，如可以，请一并指出！谢谢！
