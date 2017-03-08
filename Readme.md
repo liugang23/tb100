@@ -53,7 +53,8 @@
 	http://localhost:8088/
 	
 ### 项目问题说明
-项目api请求方式改为 dingo + jWT 方式后，虽然没有报错，但返回token 有误
+项目api请求方式改为 dingo + jWT 方式后，虽然没有报错，但返回token 有误：	
+
 	<?php
 	namespace App\Api\Controllers\V1;
 
