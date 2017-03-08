@@ -61,9 +61,7 @@
 	use Illuminate\Http\Request;
 	use App\Api\Controllers\BaseController;
 
-	// use Tymon\JWTAuth\JWTAuth;
-	// use Tymon\JWTAuth\Exceptions\JWTException;
-	// use Illuminate\Support\Facades\Hash;
+	use \JWTAuth;
 	use App\Service\UsersService;
 	use Carbon\Carbon;
 	use Auth;
@@ -90,8 +88,6 @@
 		    'password' => $request->get('passw'),
 		    'status' => 0,
 		];
-
-		// $payload = $request->only('tel', 'password');
 
 		try {
 		    // attempt 尝试验证凭据并为用户创建令牌
