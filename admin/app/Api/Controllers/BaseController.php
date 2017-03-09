@@ -1,9 +1,9 @@
 <?php
 namespace App\Api\Controllers;
 
+// use Illuminate\Routing\Controller;
 use Dingo\Api\Routing\Helpers;
-use Illuminate\Routing\Controller;
-// use App\Http\Controllers\Controller;
+use App\Http\Controllers\Controller;
 
 class BaseController extends Controller
 {
@@ -15,7 +15,7 @@ class BaseController extends Controller
 	 */
 	protected function errorBadRequest($validator)
 	{
-		
+
 	}
 
 }

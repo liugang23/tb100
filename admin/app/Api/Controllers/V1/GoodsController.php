@@ -4,7 +4,7 @@ namespace App\Api\Controllers\V1;
 use App\Api\Controllers\BaseController;
 use Illuminate\Http\Request;
 use App\Service\GoodsService;
-// use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response;
 
 class GoodsController extends BaseController
 {
@@ -28,7 +28,7 @@ class GoodsController extends BaseController
                           ->apiGetGoodsList($id=1, 1);
 
         if (empty($goodslist)) {
-            return $response->setStatusCode(401);
+            //return $response->setStatusCode(401);
         } else {
             return $goodslist;
         }
@@ -66,7 +66,7 @@ class GoodsController extends BaseController
         $goodslist = self::$goodsService->apiGetGoodsList($id, 1);
 
         if (empty($goodslist)) {
-            return $response->setStatusCode(401);
+//            return $response->setStatusCode(401);
         } else {
             return $goodslist;
         }

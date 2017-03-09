@@ -39,94 +39,100 @@ Route::group(['domain' => 'admin.tb.com','namespace' => 'admin'],function() {
 // 获取 api 路由实例
 $api = app('Dingo\Api\Routing\Router');
 // 定义版本分组 且 路由50次请求限制和5分钟过期时间
-$api->version('v1', ['namespace' => 'App\Api\Controllers\V1', 'middleware' => 'cors', 'limit' => 100, 'expires' => 5], function ($api) {
-	// 注册
-	$api->POST('/register', [
-		'limit' => 50, 
-		'expires' => 5,
-		'as' => 'register.register',
-		'uses' => 'AuthenticateController@register',
-	]);
-	// 登录
-	$api->POST('/login', [
-		'limit' => 50, 
-		'expires' => 5,
-		'as' => 'login.authenticate',
-		'uses' => 'AuthenticateController@authenticate',
-	]);
-	// 刷新 token
+$api->version('v1', function ($api) {
+    // header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, PATCH, DELETE');
+	$api->group(['namespace' => 'App\Api\Controllers\V1', 'middleware' => 'cors'], function ($api) {
 
-	// 验证码
-	$api->GET('/validate', [
-		'limit' => 50, 
-		'expires' => 5,
-		'as' => 'validate.index',
-		'uses' => 'ValidateCodeController@index',
-	]);
-	// 手机短信
-	$api->POST('/validate', [
-		'limit' => 50,
-		'expires' => 5,
-		'as' => 'validate.store',
-		'uses' => 'ValidateCodeController@store',
-	]);
-	// 商品列表首页
-	$api->GET('/goodslist', [
-		'as' => 'goodslist.index',
-		'uses' => 'GoodsController@index'
-	]);
-	// 商品列表分类
-	$api->GET('/goodslist/{id}', [
-		'as' => 'goodslist.show',
-		'uses' => 'GoodsController@show',
-	]);
-	// 商品详情
-	$api->GET('/goodsinfo/{id}', [
-		'as' => 'goodsinfo.show',
-		'uses' => 'GoodsinfoController@show',
-	]);
+		// 注册
+		$api->POST('/register', [
+			'limit' => 50, 
+			'expires' => 5,
+			'as' => 'register.register',
+			'uses' => 'AuthController@register',
+		]);
+		// 登录
+		$api->POST('/login', [
+			'limit' => 50, 
+			'expires' => 5,
+			'as' => 'login.authenticate',
+			'uses' => 'AuthController@authenticate',
+		]);
+		// 刷新 token
 
-	// 通过 jwt.api.auth 中间件限制未登录权限
-	$api->group(['middleware' => 'jwt.api.auth'], function ($api) {
-		// 退出
-		$api->POST('/logout', [
-			'as' => 'logout.logout',
-			'uses' => 'AuthenticateController@logout',
+		// 验证码
+		$api->GET('/validate', [
+			'limit' => 50, 
+			'expires' => 5,
+			'as' => 'validate.index',
+			'uses' => 'ValidateCodeController@index',
 		]);
-		// 购物车列表
-		$api->GET('/cart', [
-			'as' => 'cart.index',
-			'uses' => 'CartController@index',
+		// 手机短信
+		$api->POST('/validate', [
+			'limit' => 50,
+			'expires' => 5,
+			'as' => 'validate.store',
+			'uses' => 'ValidateCodeController@store',
 		]);
-		// 添加商品到购物车
-		$api->POST('/cart', [
-			'as' => 'cart.store',
-			'uses' => 'CartController@store',
+		// 商品列表首页
+		$api->GET('/goodslist', [
+			'as' => 'goodslist.index',
+			'uses' => 'GoodsController@index'
 		]);
-		// 查询购物车里的商品
-		$api->GET('/cart/{id}', [
-			'as' => 'cart.show',
-			'uses' => 'CartController@show',
+		// 商品列表分类
+		$api->GET('/goodslist/{id}', [
+			'as' => 'goodslist.show',
+			'uses' => 'GoodsController@show',
 		]);
-		// 删除购物车商品
-		$api->DELETE('/cart/{id}', [
-			'as' => 'cart.destroy',
-			'uses' => 'Controllers@destroy',
+		// 商品详情
+		$api->GET('/goodsinfo/{id}', [
+			'as' => 'goodsinfo.show',
+			'uses' => 'GoodsinfoController@show',
 		]);
-		// 订单首页
-		$api->GET('/order', [
-			'as' => 'order.index',
-			'uses' => 'OrderController@index',
-		]);
-		// 其它订单
-		$api->GET('/order/{id}', [
-			'as' => 'order.show',
-			'uses' => 'OrderController@show',
-		]);
-		// 个人中心
-		// $api->get('/me', [
-		// 	'as' => 'me.index',
-		// 	'uses' => ''
-		// ]);
+
+		// 通过 jwt.auth 中间件限制未登录权限
+		$api->group(['middleware' => 'jwt.auth'], function ($api) {
+			// 退出
+			$api->POST('/logout', [
+				'as' => 'logout.logout',
+				'uses' => 'AuthController@logout',
+			]);
+			// // 购物车列表
+			$api->GET('/cart', [
+				'as' => 'cart.index',
+				'uses' => 'CartController@index',
+			]);
+			// // 添加商品到购物车
+			$api->POST('/cart', [
+				'as' => 'cart.store',
+				'uses' => 'CartController@store',
+			]);
+			// // 查询购物车里的商品
+			$api->GET('/cart/{id}', [
+				'as' => 'cart.show',
+				'uses' => 'CartController@show',
+			]);
+			// 删除购物车商品
+			// $api->DELETE('/cart/{id}', [
+			// 	'as' => 'cart.destroy',
+			// 	'uses' => 'Controllers@destroy',
+			// ]);
+			// 订单首页
+			$api->GET('/order', [
+				'as' => 'order.index',
+				'uses' => 'OrderController@index',
+			]);
+			// // 其它订单
+			$api->GET('/order/{id}', [
+				'as' => 'order.show',
+				'uses' => 'OrderController@show',
+			]);
+			// 个人中心
+			// $api->get('/me', [
+			// 	'as' => 'me.index',
+			// 	'uses' => ''
+			// ]);
+		});
+
 	});
+	
 });

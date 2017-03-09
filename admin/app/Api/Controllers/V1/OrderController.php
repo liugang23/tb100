@@ -4,7 +4,8 @@ namespace App\Api\Controllers\V1;
 use App\Api\Controllers\BaseController;
 use Illuminate\Http\Request;
 use App\Service\OrderService;
-use Symfony\Component\HttpFoundation\Response;
+use App\Api\Transformers\OrderTransformer;
+
 
 class OrderController extends BaseController
 {
@@ -20,27 +21,14 @@ class OrderController extends BaseController
      * 获取所有订单
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request,Response $response)
-    {
-        $param = array([
-            'guid' => '112233',
-            'username' => 'name',
-            'password' => 'password',
-        ],[
-            'guid' => '558899',
-            'username' => 'name',
-            'password' => 'password',
-        ]);
-        return $param;
-        
-        $orderList = self::$orderService
+    public function index(Request $request)
+    {   
+        $order = self::$orderService
                          ->apiGetOrderAll();
 
-        if (empty($orderList)) {
-            return $response->setStatusCode(401);
-        } else {
-            return $orderList;
-        }
+
+        return $this->collection($order, new OrderTransformer);
+
     }
 
     /**

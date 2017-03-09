@@ -1,21 +1,19 @@
 <?php
 namespace App\Model;
 
-use Illuminate\Auth\Authenticatable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends BaseModel implements AuthenticatableContract, JWTSubject
+class User extends Authenticatable
 {	
-    // 软删除和用户验证attempt
-    use Authenticatable;
+    // JWT 中有指定验证的字段,使用 Notifiable 来修改这些指定
+    use Notifiable;
     
     /**
      * 白名单 $fillable 属性指定了哪些字段支持批量赋值
      * @var array
      */
-    //protected $fillable = ['uid', 'username', 'tel', 'password', 'pic', 'status', 'addtime'];
+    protected $fillable = ['uid', 'username', 'tel', 'password', 'pic', 'status', 'addtime'];
     /**
      * 模型所使用的数据库表
      * @var string
@@ -43,19 +41,28 @@ class User extends BaseModel implements AuthenticatableContract, JWTSubject
     protected $hidden = ['password', 'remember_token'];
 
     /**
+     * jwt 默认密码字段 password 
+     * 修改密码字段
+     */
+    public function getAuthPassword()
+    {
+        return $this->password;
+    }
+
+    /**
      * 获取用户的唯一标识符
      * jwt 需要实现的方法
      */
-    public function getJWTIdentifier()
-    {
-        return $this->getKey();// 模型的方法
-    }
+    // public function getJWTIdentifier()
+    // {
+    //     return $this->getKey();// 模型的方法
+    // }
 
     // jwt 需要实现的方法
-    public function getJWTCustomClaims()
-    {
-        return [];
-    }
+    // public function getJWTCustomClaims()
+    // {
+    //     return [];
+    // }
 
     /**
      * 用户-订单一对多关联

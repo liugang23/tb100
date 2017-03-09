@@ -1,27 +1,63 @@
-# Laravel PHP Framework
+### 作为被继承的验证基础模块	App\api\Controllers
+	BaseController.php
+### 验证模块	App\Api\Controllers\V1
+	AuthController.php
+### token 获取信息模块	App\Api\Transformers
 
-[![Build Status](https://travis-ci.org/laravel/framework.svg)](https://travis-ci.org/laravel/framework)
-[![Total Downloads](https://poser.pugx.org/laravel/framework/d/total.svg)](https://packagist.org/packages/laravel/framework)
-[![Latest Stable Version](https://poser.pugx.org/laravel/framework/v/stable.svg)](https://packagist.org/packages/laravel/framework)
-[![Latest Unstable Version](https://poser.pugx.org/laravel/framework/v/unstable.svg)](https://packagist.org/packages/laravel/framework)
-[![License](https://poser.pugx.org/laravel/framework/license.svg)](https://packagist.org/packages/laravel/framework)
+	<?php
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as authentication, routing, sessions, queueing, and caching.
+	namespace App\Api\Transformers;
 
-Laravel is accessible, yet powerful, providing tools needed for large, robust applications. A superb inversion of control container, expressive migration system, and tightly integrated unit testing support give you the tools you need to build any application with which you are tasked.
+	/**该类为dingo api封装好**/
+	use League\Fractal\TransformerAbstract;
 
-## Official Documentation
+	class OrderTransformer extends TransformerAbstract
+	{
+	    /***
+	     * 分开为了解耦
+	     * 数据字段选择
+	     * @param $lesson
+	     * @return array
+	     */
+	    public function transform($lesson)
+	    {
+	        /******隐藏数据库字段*****/
+	        return [
+	            'username' => $lesson['user_name'],
+	            'email' => $lesson['user_email'],
+	        ];
+	    }
+	}
+注：这里继承了dingo的TransformerAbstract类 
 
-Documentation for the framework can be found on the [Laravel website](http://laravel.com/docs).
 
-## Contributing
+然后在Controllers目录下新建TestsController.php作为基础信息获取，代码如下：
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](http://laravel.com/docs/contributions).
+	<?php
+	namespace App\Api\Controllers;
 
-## Security Vulnerabilities
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
+	use App\Api\Transformers\TestsTransformer;
+	use App\Client;
 
-## License
+	class TestsController extends BaseController
+	{
+	    public function index()
+	    {
+	        $tests = Client::all();
+	        return $this->collection($tests, new TestsTransformer());
+	    }
 
-The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
+	    public function show($id)
+	    {
+	        $test = Client::find($id);
+	        if (!$test) {
+	            return $this->response->errorNotFound('Test not found');
+	        }
+	        return $this->item($test, new TestsTransformer());
+	    }
+	}
+
+	注：这里引用了TestsTransformer作为数据格式，item为dingo自带函数，处理数据格式并返回
+	请求方式与⑤中请求localhost:8000/api/user/me?token=xxxxxxxxxxxxxxxxxxxx 一致，详情请求地址请看routes文件。
+

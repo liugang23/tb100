@@ -54,8 +54,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'AdminMiddleware' => Middleware\Admin\AdminMiddleware::class,
         'response' => Middleware\Home\ResponseMiddleware::class,
-        // 'jwt.auth' => Tymon\JWTAuth\Middleware\GetUserFromToken::class,
-        // 'jwt.refresh' => Tymon\JWTAuth\Middleware\RefreshToken::class,
-        'jwt.api.auth' => \App\Http\Middleware\APi\GetUserFromToken::class, //新增注册的中间件
+        'jwt.auth' => \Tymon\JWTAuth\Middleware\GetUserFromToken::class,
+        'jwt.refresh' => \Tymon\JWTAuth\Middleware\RefreshToken::class,
     ];
 }

@@ -81,7 +81,7 @@ class UsersService
              'tel' => $data['phone'],
              'status' => 0
         ];
-        $password = $data['password'];
+        $password = $data['passw'];
 		// $validateCode = $data['ValidateCode'];
 
 		// 获取session 中的验证码

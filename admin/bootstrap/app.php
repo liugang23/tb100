@@ -51,5 +51,9 @@ $app->singleton(
 | from the actual running of the application and sending responses.
 |
 */
+// 引入报错，是否在这里引入
+// app('Dingo\Api\Auth\Auth')->extend('jwt', function ($app) {
+//     return new Dingo\Api\Auth\Provider\JWT($app['Tymon\JWTAuth\JWTAuth']);
+// });
 
 return $app;
