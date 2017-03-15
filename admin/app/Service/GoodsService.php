@@ -156,7 +156,7 @@ class GoodsService
 	 * @param $id $num
 	 * @return mixed
 	 */
-	public function apiGetGoodsList($id, $num)
+	public function apiGetGoodsList($id, $num=1)
 	{
 		return self::$goodsStore->apiGetGoodsList($id, $num);
 	}

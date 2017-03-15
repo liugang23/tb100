@@ -3,31 +3,26 @@ namespace App\Api\Controllers\V1;
 
 use App\Api\Controllers\BaseController;
 use Illuminate\Http\Request;
-use App\Service\OrderService;
+use App\Service\UsersService;
 use App\Api\Transformers\OrderTransformer;
-use Dingo\Api\Routing\Helpers;
-use JWTAuth;
 
 
-class OrderController extends BaseController
+class UserController extends BaseController
 {
-    // 接口帮助调用
-    use Helpers;
-	private static $orderService;
+	private static $userService;
 
-    public function __construct(OrderService $orderService)
+    public function __construct(UserService $userService)
     {
-        self::$orderService = $orderService;
+        self::$userService = $userService;
     }
 
 	/**
      * Display a listing of the resource.
-     * 获取所有订单
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-
+    public function index(Request $request)
+    {   
+        
     }
 
     /**
@@ -42,16 +37,13 @@ class OrderController extends BaseController
 
     /**
      * Store a newly created resource in storage.
-     * 添加\创建 订单
+     * 添加订单
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $param = $request->all();
-        $user = JWTAuth::parseToken()->authenticate();
-        $order = self::$orderService->apiAddOrder($user, $param);
-        return $order;
+        
     }
 
     /**
@@ -60,20 +52,9 @@ class OrderController extends BaseController
      * @param  int  $type
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, $type)
-    {   
-        // $user = $this->user();
-        $user = JWTAuth::parseToken()->authenticate();
-
-        $order = self::$orderService
-                     ->apiGetOrderList($user, $type);
-
-        // 不存在 调用dingo 的 response 方法返回错误信息
-        if(!$order) {
-            return $this->response->errorNotFound('order not found');
-        }
-        // return $order;
-        return $this->response->item($order, new OrderTransformer());
+    public function show($id)
+    {
+        
     }
 
     /**

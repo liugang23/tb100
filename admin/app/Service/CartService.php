@@ -18,63 +18,74 @@ class CartService
 		self::$goodsStore = $goodsStore;
 	}
 
-	/*
+	/**
 	 * 查询用户购物车
+	 * 
+	 * @param $user $cart
+	 * @return mixed
 	 */
-	public function apiGetCartList()
+	public function apiGetCartList($user='', $cart)
 	{
-		$cartItems = array([
-            'guid' => 112233,
-            'username' => 'name',
-            'password' => 'password',
-        ],[
-            'guid' => 558899,
-            'username' => 'name',
-            'password' => 'password',
-        ]);
-
-		// $cartItems = array();  // 声明一个购物车数组
-		$cart = Cookie::get('cart');	// 获取用户cookie购物车信息
-		// 购物车不为空时，通过explode对购物车内容按,分割否则写入数组
+		// 声明一个购物车数组
+		$cartItems = array();  
+		// storage 购物车不为空，通过explode对购物车内容按 ',' 分割否则写入数组
         $cart_arr = ($cart != null ? explode(',', $cart) : array());  // 商品购物车数组
-
-        // 获取用户登录信息 
-		$user = Session::get('user', '');
 
 		// 如果用户已登录 则同步购物车
 		if($user != '') {
 			// 调用自定义函数 syncCart 同步购物车
-			$cartItems = $this->syncCart($user->uid, $cart_arr);
-			// 同步完成后,需要清空cookie里的数据
-			return response()->json($cartItems)
-				   ->withCookie('cart', null);
+			$cartItems = $this->syncCart($user['uid'], $cart_arr);
+			// 同步完成后,需要清空 storage 里的购物车数据
+            return response()->json([
+	                    'serverTime' => time(),
+	                    'statusCode' => 200,
+	                    'resultInfo' => '查询成功',
+	                    'resultData' => $cartItems 
+                	]);
+		} else {
+			// 用户未登录 查询 storage 中的购物车
+			if ($cart_arr != '') {// 有商品
+				foreach ($cart_arr as $key => $val) {
+					//查找 : 在字符串中第一次出现的位置
+					$index = strpos($val, ':');	
 
-		} else {// 用户未登录 查询cookie中的购物车商品
-			foreach ($cart_arr as $key => $val) {
-				//查找 : 在字符串中第一次出现的位置
-				$index = strpos($val, ':');	
+					// 初始购物车数组
+					$item = array();
+					$item['guid'] = substr($val, 0, $index);
+					$item['count'] = (int)substr($val, $index+1);
+	                $item['goods'] = self::$goodsStore->apiGetGoods($item->guid);
 
-				// 初始购物车数组
-				$item = array();
-				$item['guid'] = substr($val, 0, $index);
-				$item['count'] = (int)substr($val, $index+1);
-                $item['goods'] = self::$goodsStore->apiGetGoods($item->guid);
-
-                // 判断商品是否存在
-				if($item['goods'] != null) {
-					// array_push() 函数向第一个参数的数组尾部添加一个或多个元素(入栈),然后返回新数组的长度。
-                    array_push($cartItems, $item);
+	                // 判断商品是否存在
+					if($item['goods'] != null) {
+						// array_push() 函数向第一个参数的数组尾部添加一个或多个元素(入栈),然后返回新数组的长度。
+	                    array_push($cartItems, $item);
+					}
 				}
+
+				return response()->json([
+	                    'serverTime' => time(),
+	                    'statusCode' => 200,
+	                    'resultInfo' => '查询成功',
+	                    'resultData' => $cartItems 
+                	]);
 			}
-
-			return response()->json($cartItems);
+			// 无商品  直接返回
+			return response()->json([
+	                'serverTime' => time(),
+	                'statusCode' => 200,
+	                'resultInfo' => '查询成功',
+	                'resultData' => $cartItems 
+                ]);
 		}
-
-
 	}	
 
 	/**
 	 * 本地购物车数据 与 数据库购物车数据同步
+	 * 
+	 * 同步原则 ：
+	 * 1、前端和服务器上都有相应商品数据时，以数量多的为准
+     * 2、当前端商品信息有，而数据库无相应商品信息时，需要将前端的数据写入数据库
+	 *
 	 * @param  $uid    用户id
 	 * @param  $cart_arr 购物车数组
      * @return mixed
@@ -86,62 +97,72 @@ class CartService
 					['uid', '=', $uid],
 					['status', '=', 0]
 				);
-		$cartItems = self::$cartStore->apiGetCart($where);
+		$cartItems = self::$cartStore->apiGetCartAll($where);
+		// 1、先判断前端购物车是否为空 如果为空 不需要同步 直接返回数据库购物车数据
+		if(count($cart_arr) == 0) {
+			// 返回 数据库购物车
+	        return $cartItems;
+		}
+		
+		// 2、前端购物车不为空 与 数据库购物车商品比较
 
-		// 1、通过数据库商信息与本地商品信息比较
-        // 2、当本地和服务器上都有相应商品数据信息时，以数量多的为准
-        // 3、当本地商品信息有，而数据库无相应商品信息时，需要将本地的数据写入数据库
+		// 初始化购物车空数组
+		$cartItems_arr = [];
+		// 循环遍历前端购物车
+		foreach ($cart_arr as $value) 
+		{
+			// strpos() 函数查找字符串在另一字符串中第一次出现的位置
+	        $index = strpos($value, ':');
+	        $guid = substr($value, 0, $index);
+	        $count = (int) substr($value, $index+1);
+	        // 判断离线购物车中guid 是否存在于数据库中
+           	$exist = false;
+           	// 遍历数据库用户购物车数据
+	        foreach ($cartItems as $temp) 
+	        {
+	            // 判断本地购物车商品信息是否存在于数据库购物车列表中
+	            if($temp->guid == $guid) {
+	                // 如果存在 则判断它们数量是否相等
+	                if($temp->count < $count) {
+	                    // 如果数据库数量小于本地，以数量多为准  更新数据库数据
+	                    $temp->count = $count;
+	                    // dd($temp->count);
+	                    $temp->save();
+	                }
+	                $exist = true;
+	                break;  // 直接跳出循环
+	            }
+	        }
 
-        $cartItems_arr = array();	// 初始化空数组
-        // 循环遍历本地购物车
-       foreach ($cart_arr as $value) {
-        	// strpos() 函数查找字符串在另一字符串中第一次出现的位置
-           $index = strpos($value, ':');
-           $guid = substr($value, 0, $index);
-           $count = (int) substr($value, $index+1);
-
-           // 判断离线购物车中goods_id 是否存在于数据库中
-           $exist = false;
-           // 遍历数据库用户购物车数据
-           foreach ($cartItems as $temp) {
-               // 判断本地购物车商品信息是否存在于数据库购物车列表中
-               if($temp->guid == $guid) {
-                   // 如果存在 则判断它们数量是否相等
-                   if($temp->count < $count) {
-                       // 如果数据库数量小于本地，以数量多为准  更新数据库数据
-                       $temp->count = $count;
-                       // dd($temp->count);
-                       $temp->save();
-                   }
-                   $exist = true;
-                   break;  // 直接跳出循环
-               }
-           }
-
-           // 根据前面的判断,如果本地购物车数据不存于数据库购物车列表中,则将商品数据存储进数据库
-           if($exist == false) {
-           		$param = array(
-						['uid', '=', $uid],
-						['guid', '=', $guid],
-						['count', '=', $count],
-						['status', '=', 0]
+	        // 根据前面的判断,如果本地购物车数据不存于数据库购物车列表中,则将商品数据存储进数据库
+	        if($exist == false) {
+	           	$param = array(
+						'uid' => $uid,
+						'guid' =>  $guid,
+						'count' =>  $count,
+						'status' =>  0,
+						'addtime' => time()
 					);
+
 				$cart_item = self::$cartStore
-							 ->apiAddCart($param);
+								 ->apiAddCart($param);
 
-               array_push($cartItems_arr, $cart_item);
-           }
+	            array_push($cartItems_arr, $cart_item);
+	        }
 
-       }
-       // 为每个商品附加对应的商品信息 便于客户端显示
-       foreach ($cartItems as $cart_item) {
-           $cart_item->goods = Goods::where('id', $cart_item->goods_id)->first();
+		}
 
-           array_push($cartItems_arr, $cart_item);
-       }
+		// 为每个商品附加对应的商品信息 便于客户端显示
+	    foreach ($cartItems as $cart_item) 
+	    {
+	        $cart_item->goods = self::$goodsStore
+	        						->apiGetGoods($cart_item->guid);
+	        array_push($cartItems_arr, $cart_item);
+	    }
 
-       return $cartItems_arr;
+       	return $cartItems_arr;
 	}
+
 
 	/**
 	 * 查询商品在购物车中的数量	API
@@ -152,35 +173,11 @@ class CartService
 	{
 		/***** 登录状态下购物车商品数量查询 *****/
 		// 获取当前登录状态
-		$user = Session::get('user', '');
+
 
 		// 判断是否登录,如果登录 更新购物车
 		if($user != '') {
 
-		} else {
-
-		/***** 未登录状态下购物车商品数量查询 ****/
-			// 购物车信息格式 (商品id:数量) 
-			// cookie 只能存字符串且长度有限
-			$cart = Cookie::get('cart');
-			// 判断本地购物车是否为空
-			$cart_arr = ($cart != null ? explode(',', $cart) : array());
-			// return $cart_arr;
-			$count = 0;	// 初始为1
-			// 在购物车中遍历传进来的商品id
-			foreach ($cart_arr as &$val) {	// 此处采用&引用，将更新的变量结果直接存入变量
-				// strpos 寻找字符串中某字符最先出现位置
-				$index = strpos($val, ':');
-				// dd($index);
-				// 字符串截取购物车商品id 并与传进来的商品id匹配 判断商品是否存在
-				if(substr($val, 0, $index) == $guid) {
-					// 如果商品存在，则加1
-					$count = ((int) substr($val, $index+1));
-					break;
-				}
-			}
-
-			return response()->json($count);
 		}
 	}
 
@@ -196,13 +193,13 @@ class CartService
 
 		/******* 登录状态下添加购物车 *******/
 		// 获取当前登录状态
-		$user = Session::get('user', '');
+		
 		// 判断是否登录,如果登录 更新购物车
 		if($user != '') {
 			// 返回正常用户的购物车信息
 			$cart_items = CartItem::where([
-						['uid', $user->uid],
-						['status', 0],
+							['uid', $user->uid],
+							['status', 0],
 						])->get();
 
 			$isCart = false; // 初始化购物车状态
@@ -228,53 +225,6 @@ class CartService
 						'statusCode' => 200,
 	                    'resultInfo' => '购物车添加成功',
 					]);
-		}else{
-			/******* 未登录状态下添加购物车 ********/
-			// 购物车信息格式 (商品id:数量) 
-			// cookie 只能存字符串且长度有限
-			$cart = Cookie::get('cart');
-			// 判断本地购物车是否为空
-			$cart_arr = ($cart != null ? explode(',', $cart) : array());
-			// return $cart_arr;
-			$count = 1;	// 初始为1
-			// 在购物车中遍历传进来的商品id
-			foreach ($cart_arr as &$val) {	// 此处采用&引用，将更新的变量结果直接存入变量
-				// strpos 寻找字符串中某字符最先出现位置
-				$index = strpos($val, ':');
-				// dd($index);
-				// 字符串截取购物车商品id 并与传进来的商品id匹配 判断商品是否存在
-				if(substr($val, 0, $index) == $guid) {
-					// 如果商品存在，则加1
-					$count = ((int) substr($val, $index+1)) + 1;
-					// 拼接购物车商品信息 $guid : $count (商品id : 数量)
-					$val = $guid . ':' . $count;
-					// dd($val);
-					break;
-				}
-			}
-
-			// 如果$count==1 说明购物车并没有该商品信息
-			// 拼装购物车商品信息
-			$goods = $guid . ':' . $count;
-			// 此时需要将商品信息写入数组
-			// array_push 将一个或多个元素压入数组的末尾
-			if($count == 1) {
-				array_push($cart_arr, $goods);
-			}
-
-			// $cookie = Cookie::make('cart', implode(',', $cart_arr));
-			
-			// $cart = Cookie::get('cart');
-			// // dd($cart);
-			// if($cart != null) {
-			// 	return 123;
-			// }else{
-			// 	return 456;
-			// }
-
-			return response()->json($count)
-				 ->withCookie('cart', implode(',', $cart_arr));
-			
 		}
 
 	}

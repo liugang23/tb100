@@ -5,17 +5,19 @@ use Illuminate\Http\Request;
 use App\Api\Controllers\BaseController;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use JWTAuth;
-use App\Service\UsersService;
+use App\Service\UserService;
 use Carbon\Carbon;
+use Hash;
 
 class AuthController extends BaseController
 {
-     private static $usersService;
+    private static $userService;
+    // protected $username = 'email';
 
-     public function __construct(UsersService $usersService)
-     {
-         self::$usersService = $usersService;
-     }
+    public function __construct(UserService $userService)
+    {
+        self::$userService = $userService;
+    }
 
     /**
      * 验证用户  获取token
@@ -24,11 +26,19 @@ class AuthController extends BaseController
      */
     public function authenticate(Request $request)
     {
-        $payload = [
-            'tel' => $request->get('phone'),
-            'password' => $request->get('passw'),
-            'status' => 0
-        ];
+        // $data = [
+        //     'tel' => $request->get('phone'),
+        //     'status' => 0
+        // ];
+        // // 查询用户是否存在
+        // $user = self::$userService->apiGetUser($data);
+        // $payload = $request->only('email', 'password');
+        // if ($user) {
+            $payload = [
+                'phone' => $request->get('phone'),
+                'password' => $request->get('passw'),
+                'status' => 0
+            ];
 
         try {
             // attempt 尝试验证凭据并为用户创建令牌
@@ -42,16 +52,21 @@ class AuthController extends BaseController
         }
 
         // 返回 token 令牌  compact函数创建一个由参数所带变量组成的数组
-        return response()->json(compact('token'));
+        // return response()->json(compact('token'));
 
-        // $result['data'] = [
-        //     'token' => $token,
-        //     'expired_at' => Carbon::now()->addMinutes(config('jwt.ttl'))->toDateTimeString(),
-        //     'refresh_expired_at' => Carbon::now()->addMinutes(config('jwt.refresh_ttl'))->toDateTimeString(),
-        //     'type' => true,
-        // ];
+        $result['data'] = [
+            'token' => $token,
+            'expired_at' => Carbon::now()->addMinutes(config('jwt.ttl'))->toDateTimeString(),
+            'refresh_expired_at' => Carbon::now()->addMinutes(config('jwt.refresh_ttl'))->toDateTimeString(),
+//            'uid' => $user['uid'],
+            'type' => true,
+        ];
 
-        // return $this->response->array($result)->setStatusCode(201);
+        return $this->response->array($result)->setStatusCode(201);
+        // }
+
+        // return '用户不存在';
+        
     }
 
     /**
@@ -106,25 +121,25 @@ class AuthController extends BaseController
     }
 
     /**
-     * 获取用户信息
+     * 根据 token 获取用户信息
      * 
      */
     public function getAuthenticatedUser()
     {
-//        try {// parseToken 解析令牌请求来源
-//            if (! $user = JWTAuth::parseToken()->authenticate()) {
-//                return response()->json(['user_not_found'], 404);
-//            }
-//        } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
-//            return response()->json(['token_expired'], $e->getStatusCode());
-//        } catch (Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
-//            return response()->json(['token_invalid'], $e->getStatusCode());
-//        } catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
-//            return response()->json(['token_absent'], $e->getStatusCode());
-//        }
-//
-//        // token 有效，找到用户
-//        return response()->json(compact('user'));
+        try {// parseToken 解析令牌请求来源
+            if (! $user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['user_not_found'], 404);
+            }
+        } catch (TokenExpiredException $e) {
+            return response()->json(['token_expired'], $e->getStatusCode());
+        } catch (TokenInvalidException $e) {
+            return response()->json(['token_invalid'], $e->getStatusCode());
+        } catch (JWTException $e) {
+            return response()->json(['token_absent'], $e->getStatusCode());
+        }
+
+        // token 有效，找到用户
+        return response()->json(compact('user'));
     }
 
 }

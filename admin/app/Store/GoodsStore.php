@@ -203,17 +203,13 @@ class GoodsStore
 
 	/**
 	 * 根据商品id获取商品基本信息 Api
-	 * @param $uid 
+	 * @param $guid 
 	 * @return mixed
 	 */
-	public static function apiGetGoods($uid)
+	public static function apiGetGoods($guid)
 	{
-		$goods = Goods::where(['status'=>0,'guid'=>$uid])
+		return Goods::where(['status'=>0,'guid'=>$guid])
 			     ->first();
-		if(!$goods) {
-			return null;
-		}
-		return $goods;
 	}
 
 

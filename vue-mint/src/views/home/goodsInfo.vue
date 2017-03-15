@@ -52,14 +52,12 @@ export default {
 	    .then((response) => {
 	    	//if(response.data.statusCode !== 200) {}
 				//console.log(JSON.parse(response.data.resultData));
-				//this.lists = JSON.parse(response.data.resultData);
-
+				//console.log(response.data)
 			//}else{
-				this.lists = JSON.parse(response.data.resultData);
-				this.goods = this.lists.info.goods;
-				this.imgs = this.lists.info.img;
-				this.info = this.lists.info.info;
-				this.count = this.lists.count;
+				this.goods = response.data.info.goods;
+				this.imgs = response.data.info.img;
+				this.info = response.data.info.info;
+				//this.count = this.lists.count;
 				//console.log(this.goods);
 			//}
 		})

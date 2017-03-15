@@ -3,6 +3,10 @@ import Vuex from 'vuex'
 import * as actions from './actions'// 操作 执行改变
 import * as getters from './getters'// * as 取别名  获取当前状态
 import login from './modules/login'
+import goodsList from './modules/goodsList'
+import goodsInfo from './modules/goodsInfo'
+import cart from './modules/cart'
+import order from './modules/order'
 
 Vue.use(Vuex)
 // 判断是否处于生产环境
@@ -16,7 +20,11 @@ export default new Vuex.Store({
 	actions,
 	getters,
 	modules: {
-		login
+		login,
+		goodsInfo,
+		goodsList,
+		cart,
+		order
 	},
 	strict: debug	// strict 严格模式
 })

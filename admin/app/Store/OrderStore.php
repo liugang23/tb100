@@ -3,6 +3,7 @@ namespace App\Store;
 
 use App\Model\User;
 use App\Model\Order;
+use App\Model\OrderItem;
 
 class OrderStore
 {
@@ -13,12 +14,17 @@ class OrderStore
 	  */
 	public function apiAddOrder($data)
 	{
-		$order = new Order;
-		$order->uid = $data['uid'];
-		$order->title = $data['title'];
-		$order->order_id = $data['order_id'];
-		$order->total_price = $data['total_price'];
-		$order->save();
+		return Order::create($data);
+	}
+
+	/**
+	  * 创建订单快照
+	  * @param $date   需要添加的数据
+	  * @return mixed
+	  */
+	public function apiAddOrderItem($data)
+	{
+		return OrderItem::create($data);
 	}
 
 	/**
@@ -37,13 +43,13 @@ class OrderStore
 	  * @param $uid
 	  * @return mixed
 	  */
-	public function apiGetOrderAll($uid)
-	{
-		return User::where(['uid'=>$uid])
-				   ->first()->hasUserOrder()
-				   ->where('status', '>', 5)
-				   ->get();
-	}
+	// public function apiGetOrderAll($uid)
+	// {
+	// 	return User::where(['uid'=>$uid])
+	// 			   ->first()->hasUserOrder()
+	// 			   ->where('status', '>', 5)
+	// 			   ->get();
+	// }
 
 	/**
 	  * 查询不同类型订单
@@ -53,10 +59,9 @@ class OrderStore
 	  */
 	public function apiGetOrderList($uid, $where)
 	{
-		return User::where(['uid'=>$uid])
-				   ->first()->hasUserOrder
-				   ->where($where)
-				   ->get();
+		return Order::where('uid', $uid)
+					->where($where)
+					->get();
 	}
 
 

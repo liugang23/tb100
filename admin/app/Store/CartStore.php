@@ -11,7 +11,7 @@ class CartStore
 	 * @param $where    指定查询条件
 	 * @return mixed
 	 */
-	public static function apiGetCart($where)
+	public static function apiGetCartAll($where)
 	{
 		return Cart::where($where)
 				   ->get();
@@ -22,14 +22,7 @@ class CartStore
 	 */
 	public static function apiAddCart($data)
 	{
-		$cart = new Cart;
-		$cart->uid = '';
-		$cart->guid = '';
-		$cart->count = '';
-		$cart->addtmie = '';
-		$cart->save();
-		
-		return $cart;
+		return Cart::create($data);
 	}
 
 	/**
@@ -40,7 +33,7 @@ class CartStore
 	 */
 	public static function apiUpdateCart($where, $status)
 	{
-		$cart =  Cart::where($where)->get();
+		$cart =  Cart::where($where)->first();
 		$cart->status = $status;
 		$cart->save();
 		return $cart;
@@ -64,7 +57,7 @@ class CartStore
 	public static function apiGetCartOrder($where, $whereIn)
 	{
 		return Cart::where($where)
-				   ->whereIn($whereIn)
+				   ->whereIn('guid',$whereIn)
 				   ->get();
 	}
 

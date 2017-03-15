@@ -1,20 +1,34 @@
-import { USER_SIGNIN,USER_SIGNOUT,USER_REGISTER } from '../types'// 引入并解构
+import { 
+	USER_SIGNIN,
+	USER_SIGNOUT,
+	USER_REGISTER 
+} from '../types'// 引入并解构
 
 // 引入 store.js 插件
 var storage = require('store');
 var isLoggedIn = function() {
-	var token = storage.get('user');// 获取localStorage 中保存的用户信息
+	// 获取localStorage 中保存的用户信息
+	var token = storage.get('user');
+	
 	if (token) {
-		// WindowBase64.atob() 函数用来解码一个已经被base-64编码过的数据
+		// token.replace(/(^\")|(\"$)/g, '');
 		// split() 方法用于把一个字符串分割成字符串数组
-		// JSON.parse() 方法用于将一个 JSON 字符串转换为对象
-		var payload = JSON.parse(window.atob(token.split('.')[1]));
+		token = JSON.parse(token.replace(/(^\")|(\"$)/g, '').split(','));
+		// 获取过期时间 并 转换为时间戳
+		var exp = new Date(token.expired_at).getTime();
+		// console.log(exp);
+		// console.log(Date.now())
 		// 用户是否已过期
-		if( payload.exp > Date.now() / 1000 ) {
+		if( exp > Date.now() ) {
+			// console.log('令牌有效')
 			// 返回用户信息
-			return JSON.parse(storage.get('user'))
+			// return JSON.parse(storage.get('user'))
+			return token.token;
 		}
+		// 令牌已过期
+		// return false;
 	} else {
+		// 令牌不存在
 		return false;
 	}
 };
@@ -32,8 +46,8 @@ const mutations = {
 		storage.set('user',JSON.stringify(user));
 		state.token = user;
 	},
-	[USER_SIGNOUT](state) {
-		storage.remove('user');// 退出 删除用户信息
+	[USER_SIGNOUT](state) {// 退出
+		storage.remove('user');// 删除用户信息
 		state.token = null;// 状态token值设为空
 	},
 	[USER_REGISTER](state, user) {// 注册
