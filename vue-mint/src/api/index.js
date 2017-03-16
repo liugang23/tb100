@@ -24,5 +24,33 @@ export default {
 	},
 	localRegister: function (data) {// 注册
 		return axios.post('http://www.tb.com/api/register', data)
-	}
+	},
+	// 商品
+	localGoods: function (data) {// 查询商品列表
+		console.log(data)
+		return axios.get('http://www.tb.com/api/goods/'+data)
+	},
+	// goodslInfo: function (data) {// 商品详情
+	// 	return axios.get('http://www.tb.com/api/goodsInfo'+data)
+	// },
+	// // 购物车
+	// addCart: function (data) {// 添加购物车
+	// 	return axios.post('http://www.tb.com/api/cart', data)
+	// },
+	// localCart: function (data) {// 查询购物车
+	// 	return axios.get('http://www.tb.com/api/cart')
+	// },
+	// deleteCart: function (data) {// 删除购物车
+	// 	return axios.get('http://www.tb.com/api/cart')
+	// },
+	// // 订单
+	// addOrder: function (data) {// 添加订单
+	// 	return axios.post('http://www.tb.com/api/order',data)
+	// },
+	// localOrder: function (data) {// 查询订单
+	// 	return axios.get('http://www.tb.com/api/order', data)
+	// },
+	// deleteOrder: function (data) {// 删除订单
+	// 	return axios.post('http://www.tb.com/api/order', data)
+	// },
 }

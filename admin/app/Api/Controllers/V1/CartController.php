@@ -4,9 +4,13 @@ namespace App\Api\Controllers\V1;
 use App\Api\Controllers\BaseController;
 use Illuminate\Http\Request;
 use App\Service\CartService;
+use App\Api\Transformers\CartTransformer;
+use Dingo\Api\Routing\Helpers;
+use JWTAuth;
 
 class CartController extends BaseController
 {
+    use Helpers;
 	private static $cartService;
 
     public function __construct(CartService $cartService)
@@ -19,15 +23,22 @@ class CartController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, $cart)
     {
-        $cartList = self::$cartService->apiGetCartList();
+        // 获取用户 uid
+        $user = JWTAuth::parseToken()->authenticate();
+        $uid = $user['uid'];
 
-        if (empty($cartList)) {
-            return $response->setStatusCode(401);
-        } else {
-            return $cartList;
+        $cart = self::$cartService
+                    ->apiGetCartList($user, $cart);
+
+        // 不存在 调用dingo 的 response 方法返回错误信息
+        if(empty($cart)) {
+            return $this->response->errorNotFound('cart not found');
         }
+        return $cart;
+        // return $this->response->item($cart, new CartTransformer());
+        // return $this->response->collection($cart, new CartTransformer());
     }
 
     /**
@@ -46,7 +57,7 @@ class CartController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Response $response)
+    public function store(Request $request)
     {
         $guid = $request->all();    // 获取商品id
         $result = self::$cartService->apiAddCart($guid);
@@ -64,15 +75,9 @@ class CartController extends BaseController
      * @param  int  $guid
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, Response $response, $guid)
+    public function show(Request $request, $guid)
     {
-        $result = self::$cartService->apiGetCartGoods($guid);
 
-        if (empty($result)) {
-            return $response->setStatusCode(401);
-        } else {
-            return $result;
-        }
     }
 
     /**

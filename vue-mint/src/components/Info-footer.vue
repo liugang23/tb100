@@ -1,6 +1,6 @@
 <template>
 	<mt-tabbar v-model="selected" fixed>
-		<mt-tab-item id="add" v-on:click.native="onAdd">
+		<mt-tab-item id="add" v-on:click.native="onAddCart">
 			<img >加入购物车
 		</mt-tab-item>
 
@@ -16,7 +16,7 @@
 </template>
 
 <script>
-var store = require('store')
+var storage = require('store')
 export default {
 	data () {
 		return {
@@ -29,7 +29,7 @@ export default {
 		this.guid = this.$route.params.id
 
 	    // 获取购物车数据
-	    var cart = store.get("cart");
+	    var cart = storage.get("cart");
 	    var count = 0;	// 初始为0
 	    if(cart != null) {
 		    cart.forEach((item, index) => {
@@ -46,7 +46,7 @@ export default {
 		
 	},
 	methods: {
-		onAdd: function() {
+		onAddCart: function() {
 			this.guid = this.$route.params.id
 			// sessionStorage：仅在当前浏览器窗口关闭前有效
 	        // localStorage：始终有效，窗口或浏览器关闭也一直保存，因此用作持久数据
@@ -56,7 +56,7 @@ export default {
 	            return false;
 	        }else{
 	        	// 获取购物车数据
-	        	var cart = store.get("cart");
+	        	var cart = storage.get("cart");
 	        	// 判断本地购物车是否为空  cart.split(",") 将字串分割为数组
 	        	var arr = (cart != null ? cart : []);
 
@@ -70,9 +70,9 @@ export default {
 		        		// 拼接购物车商品信息 $guid : $count
 		        		arr[n] = this.guid + ':' + count;
 		        		// 删除之保存
-		        		store.remove(cart)
+		        		storage.remove("cart")
 		        		// 保存最新
-		        		store.set("cart", arr);
+		        		storage.set("cart", arr);
 		        	}
 		        }
 
@@ -83,7 +83,7 @@ export default {
 	        		var obj = [this.guid + ':' + count];
 	        		arr.push.apply(arr, obj)	// 添加至数组
 	        		// 写入购物车
-	            	store.set("cart", arr);
+	            	storage.set("cart", arr);
 	        	}
 	        	this.count = count;JSON.parse
 

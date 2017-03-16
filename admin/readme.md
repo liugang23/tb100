@@ -2,6 +2,7 @@
 	BaseController.php
 ### 验证模块	App\Api\Controllers\V1
 	AuthController.php
+	验证模块分为登录、注册、获取用户信息
 ### token 获取信息模块	App\Api\Transformers
 
 	<?php

@@ -74,13 +74,13 @@ $api->version('v1', function ($api) {
 			'uses' => 'ValidateCodeController@store',
 		]);
 		// 商品列表首页
-		$api->GET('/goodslist', [
-			'as' => 'goodslist.index',
+		$api->GET('/goods', [
+			'as' => 'goods.index',
 			'uses' => 'GoodsController@index'
 		]);
-		// 商品列表分类
-		$api->GET('/goodslist/{id}', [
-			'as' => 'goodslist.show',
+		// 商品分类列表
+		$api->GET('/goods/{id}', [
+			'as' => 'goods.show',
 			'uses' => 'GoodsController@show',
 		]);
 		// 商品详情
@@ -88,34 +88,41 @@ $api->version('v1', function ($api) {
 			'as' => 'goodsinfo.show',
 			'uses' => 'GoodsinfoController@show',
 		]);
-
+		
+		// jwt.refresh 限制token使用次数(每条token使用一次)
 		// 通过 jwt.auth 中间件限制未登录权限
 		$api->group(['middleware' => 'jwt.auth'], function ($api) {
+			$api->get('user/me', 'AuthController@getAuthenticatedUser');
 			// 退出
 			$api->POST('/logout', [
 				'as' => 'logout.logout',
 				'uses' => 'AuthController@logout',
 			]);
-			// // 购物车列表
-			$api->GET('/cart', [
+			// 购物车列表
+			$api->GET('/cart/{id}', [
 				'as' => 'cart.index',
 				'uses' => 'CartController@index',
 			]);
-			// // 添加商品到购物车
+			// 添加商品到购物车
 			$api->POST('/cart', [
 				'as' => 'cart.store',
 				'uses' => 'CartController@store',
 			]);
 			// // 查询购物车里的商品
-			$api->GET('/cart/{id}', [
-				'as' => 'cart.show',
-				'uses' => 'CartController@show',
-			]);
+			// $api->GET('/cart/{id}', [
+			// 	'as' => 'cart.show',
+			// 	'uses' => 'CartController@show',
+			// ]);
 			// 删除购物车商品
 			// $api->DELETE('/cart/{id}', [
 			// 	'as' => 'cart.destroy',
 			// 	'uses' => 'Controllers@destroy',
 			// ]);
+			// 提交订单
+			$api->POST('/order/commit', [
+				'as' => 'order.commit.store',
+				'uses' => 'OrderController@store'
+			]);
 			// 订单首页
 			$api->GET('/order', [
 				'as' => 'order.index',

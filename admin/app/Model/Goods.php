@@ -26,4 +26,13 @@ class Goods extends Model
     {
     	return $this->hasMany('App\Model\GoodsInfo', 'guid', 'guid');
     }
+
+    /**
+     * 商品-购物车一对多关联
+     */
+    public function hasGoodsCart()
+    {
+        return $this->hasMany('App\Model\Cart', 'guid', 'guid');
+    }
+
 }

@@ -2,25 +2,27 @@
 <div>
 	<div class="page app-main-top">
 		<div class="weui_cells weui_cells_checkbox">
-	        <label class="weui_cell weui_check_label" :for="list.guid" v-for="list in lists">
-	            <div class="weui_cell_hd" style="width: 23px;">
-	                <input type="checkbox" class="weui_check" :id="list.guid" :value="list.guid" v-model="toggle">
-	                <i :class="isCheck(list.guid)"></i>
-	            </div>
-	            <div class="weui_cell_bd weui_cell_primary">
-	              	<div style="position: relative;">
-		                <img class="app-cart-img">
-		                <div class="app-cart-info">
-		                	<div style="text-align:left">123</div>
-		                	<div class="app-time app-space-20">数量：<span class="app-cart-summary">x </span></div>
-		                	<div class="app-time">总计：<span class="app-cart-price">￥ </span></div>
+			<div v-if="lists.length > 0">
+		        <label class="weui_cell weui_check_label" :for="list.guid" v-for="list in lists">
+		            <div class="weui_cell_hd" style="width: 23px;">
+		                <input type="checkbox" class="weui_check" :id="list.guid" :value="list.guid" v-model="toggle">
+		                <i :class="isCheck(list.guid)"></i>
+		            </div>
+		            <div class="weui_cell_bd weui_cell_primary">
+		              	<div style="position: relative;">
+			                <img class="app-cart-img" :src="list.goods.pic">
+			                <div class="app-cart-info">
+			                	<div style="text-align:left">{{ list.goods.name }}</div>
+			                	<div class="app-time app-space-20">数量：<span class="app-cart-summary">x </span>{{ list.count }}</div>
+			                	<div class="app-time">总计：<span class="app-cart-price">￥ </span>{{ list.count*list.goods.price }}</div>
+			                </div>
 		                </div>
-	                </div>
-	            </div>
-	        </label>
-
-		<!--	<div style="text-align:center">购物车暂无商品</div>  -->
-
+		            </div>
+		        </label>
+	        </div>
+	        <div v-if="lists.length == 0">
+				<mt-cell title="购物车暂无商品"></mt-cell>
+			</div>
 	    </div>
 	</div>
 	<div class="app-fix-bottom">
@@ -35,6 +37,8 @@
 </template>
 <script>
 require('../../assets/css/weui.css')
+import store from '../../vuex/store.js'//状态管理
+var storage = require('store')
 
 export default {
 	components: {
@@ -48,15 +52,19 @@ export default {
 		}
 	},
 	mounted() {// 生命周期钩子
-		var _this = this;
-		_this.axios.get('http://www.tb.com/api/cart')
+		var	cart = storage.get('cart');
+		this.axios.get('http://www.tb.com/api/cart/'+cart)
 		.then((response) => {
-			//if(response.data.resultStatus == 200) {
-				console.log(response.data.resultData);
-				_this.lists = JSON.parse(response.data.resultData);
-			//}else{
-
-			//}
+			if(response.data.statusCode == 200) {
+				console.log(response.data.resultData)
+				this.lists = response.data.resultData
+				if(store.state.login.token) 
+				{
+					// 删除之保存
+				    storage.remove('cart')
+				    console.log('删除购物车')
+				}
+			}
 		})
 		.catch(function (error) {
 			console.log(error);
@@ -67,7 +75,7 @@ export default {
 	},
 	methods: {
 		isCheck(val) {
-			console.log(val);
+			//console.log(val);
 			let isCheck = false;
 			this.toggle.forEach((item, index) => {
 				if (item == val) {
@@ -78,15 +86,30 @@ export default {
 			return isCheck ? 'weui_icon_checked' : 'weui_icon_unchecked'
 		},
 		onPaly: function() {
-			console.log('paly')
 			var guids_arr = [];	//初始化商品id数组
-			// 获取被勾选的项的id
-
-			// 将相应选中商品的id写入数组
-			// guids_arr.push
+			//console.log(this.toggle)
+			// 获取被勾选的项的id   写入数组
+			this.toggle.forEach((item, index) => {
+				//console.log(123456)
+				guids_arr.push(item)
+			})
 			
-
+			//console.log(guids_arr)
 			//发送ajax请求
+			this.axios.post('http://www.tb.com/api/order/commit/', [ guids_arr ])
+			.then((response) => {
+				//if(response.data.statusCode == 200) {
+					console.log(response.data)
+					//this.lists = response.data.resultData
+
+				//}
+			//})
+			//.catch(function (error) {
+			//	console.log(error);
+				// 显示返回的错误信息
+				//this.$set('toasttext',String(error.status));
+				//this.$set('toastshow',true);
+			});
 		},
 		onDel: function() {
 			console.log('del')

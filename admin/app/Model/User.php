@@ -6,14 +6,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {	
-    // JWT 中有指定验证的字段,使用 Notifiable 来修改这些指定
+    // JWT 中有指定验证的字段,使用 Notifiable 允许修改这些指定
     use Notifiable;
     
     /**
      * 白名单 $fillable 属性指定了哪些字段支持批量赋值
      * @var array
      */
-    protected $fillable = ['uid', 'username', 'tel', 'password', 'pic', 'status', 'addtime'];
+    protected $fillable = ['uid', 'username', 'email', 'password', 'pic', 'status', 'addtime'];
     /**
      * 模型所使用的数据库表
      * @var string
@@ -22,7 +22,7 @@ class User extends Authenticatable
     /** 
      * 自定义主键
      */
-    protected $primaryKey = 'uid';
+    // protected $primaryKey = 'uid';
 
     /**
      * 关闭 递增
@@ -48,6 +48,15 @@ class User extends Authenticatable
     {
         return $this->password;
     }
+
+    /**
+     * 修改 jwt 默认用户名字段 
+     */
+    // public function getAuthName()
+    // {
+    //     return $this->tel;
+    // }
+
 
     /**
      * 获取用户的唯一标识符
