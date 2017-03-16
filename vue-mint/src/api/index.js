@@ -27,7 +27,6 @@ export default {
 	},
 	// 商品
 	localGoods: function (data) {// 查询商品列表
-		console.log(data)
 		return axios.get('http://www.tb.com/api/goods/'+data)
 	},
 	// goodslInfo: function (data) {// 商品详情

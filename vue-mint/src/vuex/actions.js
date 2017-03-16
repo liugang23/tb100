@@ -57,14 +57,19 @@ export const UserRegister = ({ commit }, data) => {
 };
 // 商品
 export const GoodsList = ({ commit }, data) => {// 商品列表
-	api.localGoods(data).then(function (response) {
-		commit(GOODS_LIST, response.data);
-		//console.log(response.data)
-		// return response.data;
-	})
-	.catch(function (error) {
-		console.log(error);
+	var promise = new Promise(function(resolve, reject){
+		api.localGoods(data).then(function (response) {
+			commit(GOODS_LIST, resolve(response.data));
+			console.log(789)
+		})
+		.catch(function (error) {
+			console.log(error);
+		});
 	});
+	promise.then(function() {
+		console.log(response.data)
+	});
+
 };
 export const GoodsInfo = ({ commit }, data) => {// 商品详情
 	api.goodsInfo(data).then(function (response) {
